@@ -14,7 +14,8 @@
   "author": "Andrej Remic",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^2.5.3",
     "express": "^4.14.0",
-    "gpio": "^0.2.7"
+    "onoff": "^1.1.1"
   }
 }

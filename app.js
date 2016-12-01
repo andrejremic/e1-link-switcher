@@ -1,46 +1,21 @@
-var express = require("express");
+var os = require('os');
+var express = require('express');
 var app = express();
-var gpio = require("gpio");
+var Gpio = require('onoff').Gpio;
 
-var gpio203 = gpio.export(203, {
-   direction: "out",
-   ready: function() {
-   console.log("GPIO 203 VALUE: ", gpio203.value);
-   }
+var eth0IP = os.networkInterfaces().eth0[0].address;
+
+// CONFIGURATION
+var webuiPort = 80;
+var pin7preklop = new Gpio(203, 'high'); // export GPIO to userspace, export: gpio 203 (pin 7), direction: out, value: 1
+
+
+process.on('SIGINT', function () { // CTRL+C
+  console.log('\nPreklopnik USTAVLJEN!')
+  pin7preklop.unexport(); 
+  process.exit(); // ustavimo aplikacijo
 });
 
-app.get("/", function(req, res){
-	if (gpio203.value == 1) {
-		res.send('<h2>Preklopnik 2Mbit linkov!</h2><a href="/1" style="background-color:red">PRIMARY</a><br><a href="/0">BACKUP</a>');
-	} else {
-		res.send('<h2>Preklopnik 2Mbit linkov!</h2><a href="/1">PRIMARY</a><br><a href="/0" style="background-color:red">BACKUP</a>');
-	};
-});
-
-app.get("/0", function(req, res){
-	gpio203.set(0);
-	setTimeout(function() {
-		console.log("GPIO 203 VALUE: ", gpio203.value);
-		if (gpio203.value == 1) {
-			res.send('<h2>Preklopnik 2Mbit linkov!</h2><a href="/1" style="background-color:red">PRIMARY</a><br><a href="/0">BACKUP</a>');
-		} else {
-			res.send('<h2>Preklopnik 2Mbit linkov!</h2><a href="/1">PRIMARY</a><br><a href="/0" style="background-color:red">BACKUP</a>');
-		};
-	}, 100);
-});
-
-app.get("/1", function(req, res){
-	gpio203.set(1);
-	setTimeout(function() {
-	    console.log("GPIO 203 VALUE: ", gpio203.value);
-		if (gpio203.value == 1) {
-			res.send('<h2>Preklopnik 2Mbit linkov!</h2><a href="/1" style="background-color:red">PRIMARY</a><br><a href="/0">BACKUP</a>');
-		} else {
-			res.send('<h2>Preklopnik 2Mbit linkov!</h2><a href="/1">PRIMARY</a><br><a href="/0" style="background-color:red">BACKUP</a>');
-		};
-	}, 100);
-});
-
-app.listen(80, function(){
-	console.log("Server is listening on port 80!!!");
+app.listen(webuiPort, function(){
+	console.log('Preklopnik ZAGNAN.\nSpletni vmesnik je dosegliv na http://'+eth0IP+':'+webuiPort+'.');
 });
