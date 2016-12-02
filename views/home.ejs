@@ -2,9 +2,9 @@
 
 <h2>Preklopnik 2Mbit linkov!</h2>
 
-<form action="/preklop" method="POST">	
-	<button class="btn btn-default" name="preklop" value="master">Primarna</button>
-	<button class="btn btn-default" name="preklop" value="backup">Redundantna</button>
-</form>
+<p>Trenutno aktivna povezava <%= aktivnaPovezava %></p>
+
+<button class="btn btn-default" id="backupBtn">Primarna</button>
+<button class="btn btn-default" id="masterBtn">Redundantna</button>
 
 <% include partials/footer %>
