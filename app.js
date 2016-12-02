@@ -8,8 +8,7 @@ var eth0IP = os.networkInterfaces().eth0[0].address;
 
 // CONFIGURATION
 var webuiPort = 80;
-var pin7preklop = new Gpio(203, 'out'); // export GPIO to userspace, export: gpio 203 (pin 7), direction: out, value: 1
-
+var pin7preklop = new Gpio(203, 'high'); // export GPIO to userspace, export: gpio 203 (pin 7), direction: out, value: 1
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -25,27 +24,19 @@ function mapAktivnaPovezava(val){
 
 
 pin7preklop.read(function(err, value){
-	if (err) {
-    	throw err;
-    }
 	pin7preklop.stanjeIzhoda = value;
 	console.log('Trenutno aktivna povezava: '+mapAktivnaPovezava(value).toUpperCase());
 });
 
 app.post('/preklop', function(req, res){
 	aktivnaPovezava = req.body.preklop;
-	console.log(aktivnaPovezava);
-	pin7preklop.write(aktivnaPovezava, function(err){
-		console.log('ERROR:', err);
-	});
+	console.log('REQUEST 2:['+parseInt(aktivnaPovezava)+']');
+	pin7preklop.write(parseInt(aktivnaPovezava));
 	res.send({success: 'true'});
 });
 
 app.get('/', function(req, res){
 	pin7preklop.read(function(err, value){
-		if (err) {
-	    	throw err;
-	    }
 		res.render('home', {aktivnaPovezava: value});
 	});
 });
