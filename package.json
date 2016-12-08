@@ -17,7 +17,12 @@
     "body-parser": "^1.15.2",
     "ejs": "^2.5.3",
     "express": "^4.14.0",
+    "express-session": "^1.14.2",
     "jquery": "^3.1.1",
-    "onoff": "^1.1.1"
+    "mongoose": "^4.7.2",
+    "onoff": "^1.1.1",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^4.0.0"
   }
 }
