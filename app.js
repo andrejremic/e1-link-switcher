@@ -52,7 +52,7 @@ app.post('/adduser', function(req, res){
 	User.register(new User({username: req.body.username}), req.body.password, function(err, user){
 		if(err){
 			console.log(err);
-			return res.render('adduser');
+			return res.render('adduser', {bodyClass: 'login'});
 		} 
 		passport.authenticate('local')(req, res, function(){
 			res.redirect("/login");
@@ -64,7 +64,7 @@ app.post('/adduser', function(req, res){
 // LOGIN ROUTES
 // render login form
 app.get('/login', function(req,res){
-	res.render('login');
+	res.render('login', {bodyClass: 'login'});
 });
 
 // login logic
@@ -111,13 +111,12 @@ app.post('/status', function(req, res){
 });
 
 app.get('/', function(req, res){
-	res.render('home');
+	res.render('home', {bodyClass: 'default'});
 });
 
 app.get('/secret', function(req, res){
-	res.render('secret');
+	res.render('secret', {bodyClass: 'default'});
 });
-
 
 
 process.on('SIGINT', function () { // CTRL+C

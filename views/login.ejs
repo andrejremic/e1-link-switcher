@@ -1,7 +1,22 @@
-<h1>Prijava</h1>
+<% include partials/header %>
 
-<form action="/login" method="POST">
-	<input type="text" name="username" placeholder="Uporabniško ime">
-	<input type="password" name="password" placeholder="Geslo">
-	<button>Prijava</button>
-</form>
+<div class="container">
+
+      <form action="/login" method="POST" class="form-signin">
+        <h2 class="form-signin-heading">Potrebna je prijava</h2>
+        <label for="inputUsername" class="sr-only">Uporabniško ime</label>
+        <input type="text" id="inputUsername" name="username" class="form-control" placeholder="Uporabniško ime" required autofocus>
+        <label for="inputPassword" class="sr-only">Geslo</label>
+        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Geslo" required>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me"> Zapomni si
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Prijava</button>
+      </form>
+
+</div> <!-- /container -->
+
+  
+<% include partials/footer %>
