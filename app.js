@@ -41,7 +41,7 @@ var eth0IP = os.networkInterfaces().eth0[0].address;
 
 // users - dodajanje uporabnikov
 app.get('/users', function(req, res){
-	res.render('users');
+	res.render('users', {bodyClass: 'default'});
 });
 
 // handling - dodajanje uporabnika
@@ -70,10 +70,15 @@ app.get('/login', function(req,res){
 // login logic
 // middleware
 app.post('/login', passport.authenticate('local', {
-	successRedirect: '/secret',
+	successRedirect: '/',
 	failureRedirect: '/login'
 	}) ,function(req, res){
 }); 
+
+app.get('/logout', function(req, res){
+	req.logout();
+	res.redirect('/');
+});
 
 // CONFIGURATION
 var webuiPort = 80;
@@ -110,13 +115,22 @@ app.post('/status', function(req, res){
 	res.send({status: mapAktivnaPovezava(statusPovezave)});
 });
 
-app.get('/', function(req, res){
+app.get('/', isLogedIn,function(req, res){
 	res.render('home', {bodyClass: 'default'});
 });
 
-app.get('/secret', function(req, res){
-	res.render('secret', {bodyClass: 'default'});
-});
+// app.get('/secret', isLogedIn, function(req, res){
+// 	res.render('secret', {bodyClass: 'default'});
+// });
+
+function isLogedIn(req, res, next){
+	if(req.isAuthenticated()){
+		console.log('islogedIn: JE prijavljen');
+		return next();
+	}
+	res.redirect('/login');
+	console.log('islogedIn: NI prijavljen');
+};
 
 
 process.on('SIGINT', function () { // CTRL+C
