@@ -35,14 +35,9 @@ passport.deserializeUser(User.deserializeUser());
 
 var eth0IP = os.networkInterfaces().eth0[0].address;
 
-// =============
-// Auth Routes
-// =============
-
-// users - dodajanje uporabnikov
-app.get('/users', function(req, res){
-	res.render('users', {bodyClass: 'default'});
-});
+/////////////////
+// Auth Routes //
+/////////////////
 
 // handling - dodajanje uporabnika
 app.post('/adduser', function(req, res){
@@ -51,7 +46,7 @@ app.post('/adduser', function(req, res){
 	req.body.password
 	User.register(new User({username: req.body.username}), req.body.password, function(err, user){
 		if(err){
-			console.log(err);
+			console.log(err); // TODO: uporabnika obvesti o morebitnih napakah
 			return res.render('adduser', {bodyClass: 'login'});
 		} 
 		passport.authenticate('local')(req, res, function(){
@@ -61,7 +56,10 @@ app.post('/adduser', function(req, res){
 });
 
 
-// LOGIN ROUTES
+//////////////////
+// LOGIN ROUTES //
+//////////////////
+
 // render login form
 app.get('/login', function(req,res){
 	res.render('login', {bodyClass: 'login'});
@@ -80,7 +78,11 @@ app.get('/logout', function(req, res){
 	res.redirect('/');
 });
 
-// CONFIGURATION
+
+///////////////////
+// CONFIGURATION //
+///////////////////
+
 var webuiPort = 80;
 var pin7preklop = new Gpio(203, 'high'); // export GPIO to userspace, export: gpio 203 (pin 7), direction: out, value: 1
 var	statusPovezave;
@@ -115,13 +117,14 @@ app.post('/status', function(req, res){
 	res.send({status: mapAktivnaPovezava(statusPovezave)});
 });
 
-app.get('/', isLogedIn,function(req, res){
-	res.render('home', {bodyClass: 'default'});
+app.get('/', isLogedIn, function(req, res){
+	console.log(req.user);
+	res.render('home', {bodyClass: 'default', currentUsername: req.user.username, currentUsername: req.user.username});
 });
 
-// app.get('/secret', isLogedIn, function(req, res){
-// 	res.render('secret', {bodyClass: 'default'});
-// });
+app.get('/config', isLogedIn, function(req, res){
+	res.render('config', {bodyClass: 'default', currentUsername: req.user.username});
+});
 
 function isLogedIn(req, res, next){
 	if(req.isAuthenticated()){

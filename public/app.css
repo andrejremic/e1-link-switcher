@@ -1,6 +1,4 @@
-///////////
-// LOGIN //
-///////////
+/* LOGIN */
 
 body.login {
   padding-top: 40px;
@@ -40,4 +38,28 @@ body.login {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+
+/* BOOTSTRAP EXTEND */
+
+
+.btn {
+  border-radius: 2px;
+}
+.navbar {
+    border-radius: 0px;
+}
+.panel {
+  border-radius: 2px;
+}
+.panel-heading {
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+}
+
+/* preklopnik specific */
+
+.logoP {
+  color: #fff;
 }
