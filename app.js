@@ -46,7 +46,7 @@ app.post('/adduser', function(req, res){
 	req.body.password
 	User.register(new User({username: req.body.username}), req.body.password, function(err, user){
 		if(err){
-			console.log(err); // TODO: uporabnika obvesti o morebitnih napakah
+			console.log(Date()+' '+err); // TODO: uporabnika obvesti o morebitnih napakah
 			return res.render('adduser', {bodyClass: 'login'});
 		} 
 		passport.authenticate('local')(req, res, function(){
@@ -98,7 +98,7 @@ function mapAktivnaPovezava(val){
 pin7preklop.read(function(err, value){
 	pin7preklop.stanjeIzhoda = value;
 	statusPovezave = mapAktivnaPovezava(value);
-	console.log('Trenutno aktivna povezava: '+statusPovezave);
+	console.log(Date()+' Trenutno aktivna povezava: '+statusPovezave);
 });
 
 statusPovezave = mapAktivnaPovezava(pin7preklop.stanjeIzhoda);
@@ -107,18 +107,17 @@ app.post('/preklop', function(req, res){
 	aktivnaPovezava = parseInt(req.body.preklop);
 	pin7preklop.write(aktivnaPovezava, function(){
 		statusPovezave = mapAktivnaPovezava(aktivnaPovezava);
-		console.log('WEBUI preklop na: '+statusPovezave);
+		console.log(Date()+' WEBUI preklop na: '+statusPovezave);
 		res.send({success: 'true'});
 	});
 });
 
 app.post('/status', function(req, res){
-	console.log('WEBUI POST /status: '+statusPovezave);
+	console.log(Date()+' WEBUI POST /status: '+statusPovezave);
 	res.send({status: mapAktivnaPovezava(statusPovezave)});
 });
 
 app.get('/', isLogedIn, function(req, res){
-	console.log(req.user);
 	res.render('home', {bodyClass: 'default', currentUsername: req.user.username, currentUsername: req.user.username});
 });
 
@@ -128,20 +127,20 @@ app.get('/config', isLogedIn, function(req, res){
 
 function isLogedIn(req, res, next){
 	if(req.isAuthenticated()){
-		console.log('islogedIn: JE prijavljen');
+		console.log(Date()+' islogedIn: '+req.user.username+' JE prijavljen');
 		return next();
 	}
 	res.redirect('/login');
-	console.log('islogedIn: NI prijavljen');
+	console.log(Date()+' islogedIn: NI prijavljen');
 };
 
 
 process.on('SIGINT', function () { // CTRL+C
-  console.log('\nPreklopnik USTAVLJEN!')
+  console.log('\n'+Date()+' Preklopnik USTAVLJEN!')
   pin7preklop.unexport(); 
   process.exit(); // ustavimo aplikacijo
 });
 
 app.listen(webuiPort, function(){
-	console.log('Preklopnik ZAGNAN.\nSpletni vmesnik je dosegliv na http://'+eth0IP+':'+webuiPort+'.');
+	console.log(Date()+' Preklopnik ZAGNAN. >>> Spletni vmesnik je dosegliv na http://'+eth0IP+':'+webuiPort+'. <<<');
 });
