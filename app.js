@@ -1,6 +1,6 @@
 var os 	 					= require('os'),
 	express  				= require('express'),
-	bodyParser 				= require("body-parser"), 
+	bodyParser 				= require('body-parser'), 
 	Gpio  					= require('onoff').Gpio,
 	mongoose  				= require('mongoose'),
 	passport  				= require('passport'),
@@ -86,6 +86,7 @@ app.get('/logout', function(req, res){
 var webuiPort = 80;
 var pin7preklop = new Gpio(203, 'high'); // export GPIO to userspace, export: gpio 203 (pin 7), direction: out, value: 1
 var pin18stikalo = new Gpio(201, 'in', 'both');
+var pin16led = new Gpio(200, 'out');
 var	statusPovezave;
 
 
@@ -124,6 +125,7 @@ pin18stikalo.watch(function (err, value) {
 	    var rocniPreklopIme = mapAktivnaPovezava(pin18stikalo.rocniPreklop);
 	    pin7preklop.write(pin18stikalo.rocniPreklop, function(){
 			console.log(Date()+' ROČNI PREKLOP preklop na: '+rocniPreklopIme);
+			pin16led.writeSync(pin18stikalo.rocniPreklop);
 		});
     });
 });
@@ -175,6 +177,7 @@ process.on('SIGINT', function () { // CTRL+C
   console.log('\n'+Date()+' Preklopnik USTAVLJEN!')
   pin7preklop.unexport(); 
   pin18stikalo.unexport(); 
+  pin16led.unexport(); 
   process.exit(); // ustavimo aplikacijo
 });
 
