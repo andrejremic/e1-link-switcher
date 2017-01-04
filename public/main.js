@@ -1,5 +1,5 @@
 $.post( "/status", function(data){
-	console.log(data.status);
+	// console.log(data.status);
 	if (data.status===0){
 		$("#backupBtn").addClass("btn-danger").removeClass("btn-default");
 		$("#masterBtn").addClass("btn-default").removeClass("btn-success");

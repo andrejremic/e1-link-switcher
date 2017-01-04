@@ -1,82 +1,15 @@
 var os 	 					= require('os'),
 	express  				= require('express'),
-	bodyParser 				= require('body-parser'), 
-	Gpio  					= require('onoff').Gpio,
-	mongoose  				= require('mongoose'),
-	passport  				= require('passport'),
-	User 					= require('./models/user.js'),  
-	LocalStratey  			= require('passport-local'),
-	passportLocalMongoose  	= require('passport-local-mongoose');
+	bodyParser 				= require('body-parser'),
+	Gpio  					= require('onoff').Gpio;
 
-mongoose.connect('mongodb://localhost/auth_demo_app');
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  // we're connected!
-});
 
 var app = express();
 app.set('view engine', 'ejs'); // da ni potrebno pisat .ejs
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
-app.use(require('express-session')({
-	secret: 'To je res neki kar noben ne bo pogruntal!',
-	resave: false,
-	saveUninitialized: false
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.use(new LocalStratey(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 var eth0IP = os.networkInterfaces().eth0[0].address;
-
-/////////////////
-// Auth Routes //
-/////////////////
-
-// handling - dodajanje uporabnika
-app.post('/adduser', function(req, res){
-	// var newUser = User({username: req.body.username})
-	req.body.username
-	req.body.password
-	User.register(new User({username: req.body.username}), req.body.password, function(err, user){
-		if(err){
-			console.log(Date()+' '+err); // TODO: uporabnika obvesti o morebitnih napakah
-			return res.render('adduser', {bodyClass: 'login'});
-		} 
-		passport.authenticate('local')(req, res, function(){
-			res.redirect("/login");
-		});
-	});
-});
-
-
-//////////////////
-// LOGIN ROUTES //
-//////////////////
-
-// render login form
-app.get('/login', function(req,res){
-	res.render('login', {bodyClass: 'login'});
-});
-
-// login logic
-// middleware
-app.post('/login', passport.authenticate('local', {
-	successRedirect: '/',
-	failureRedirect: '/login'
-	}) ,function(req, res){
-}); 
-
-app.get('/logout', function(req, res){
-	req.logout();
-	res.redirect('/');
-});
 
 
 ///////////////////
@@ -155,22 +88,13 @@ app.post('/status', function(req, res){
 	});
 });
 
-app.get('/', isLogedIn, function(req, res){
-	res.render('home', {bodyClass: 'default', currentUsername: req.user.username, currentUsername: req.user.username});
+app.get('/', function(req, res){
+	res.render('home', {bodyClass: 'default', currentUsername: 'test'});
 });
 
-app.get('/config', isLogedIn, function(req, res){
-	res.render('config', {bodyClass: 'default', currentUsername: req.user.username});
-});
-
-function isLogedIn(req, res, next){
-	if(req.isAuthenticated()){
-		console.log(Date()+' islogedIn: '+req.user.username+' JE prijavljen');
-		return next();
-	}
-	res.redirect('/login');
-	console.log(Date()+' islogedIn: NI prijavljen');
-};
+// app.get('/config', function(req, res){
+// 	res.render('config', {bodyClass: 'default', currentUsername: 'test'});
+// });
 
 
 process.on('SIGINT', function () { // CTRL+C
