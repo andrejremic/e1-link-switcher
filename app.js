@@ -51,13 +51,14 @@ pin18stikalo.watch(function (err, value) {
 	if (err) {
 	    throw err;
     }
+    console.log('WATCH: '+value);
     pin7Read(function(){
-    	// console.log('pin7preklop.stanjeIzhoda: '+pin7preklop.stanjeIzhoda);
-	    pin18stikalo.rocniPreklop = 1-pin7preklop.stanjeIzhoda;
+    	console.log('pin7preklop.stanjeIzhoda: '+pin7preklop.stanjeIzhoda);
+	    pin18stikalo.rocniPreklop =  1 ^ pin7preklop.stanjeIzhoda;
 	    // console.log('pin18stikalo.rocniPreklop: '+pin18stikalo.rocniPreklop);
 	    var rocniPreklopIme = mapAktivnaPovezava(pin18stikalo.rocniPreklop);
 	    pin7preklop.write(pin18stikalo.rocniPreklop, function(){
-			console.log(Date()+' ROČNI PREKLOP preklop na: '+rocniPreklopIme);
+			// console.log(Date()+' ROČNI PREKLOP preklop na: '+rocniPreklopIme+' '+pin18stikalo.rocniPreklop);
 			pin16led.writeSync(pin18stikalo.rocniPreklop);
 		});
     });
