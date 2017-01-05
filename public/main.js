@@ -1,13 +1,24 @@
-$.post( "/status", function(data){ // TODO: timer - osveži na 
-	// console.log(data.status);
-	if (data.status===0){
-		$("#backupBtn").addClass("btn-danger").removeClass("btn-default");
-		$("#masterBtn").addClass("btn-default").removeClass("btn-success");
-	} else if (data.status===1) {
-		$("#masterBtn").addClass("btn-success").removeClass("btn-default");
-		$("#backupBtn").addClass("btn-default").removeClass("btn-danger");
-	}
+$( document ).ready(function() {
+
+	function getStatus() {
+		$.post( "/status", function(data){ // TODO: timer - osveži na 
+			// console.log(data.status);
+			if (data.status===0){
+				$("#backupBtn").addClass("btn-danger").removeClass("btn-default");
+				$("#masterBtn").addClass("btn-default").removeClass("btn-success");
+			} else if (data.status===1) {
+				$("#masterBtn").addClass("btn-success").removeClass("btn-default");
+				$("#backupBtn").addClass("btn-default").removeClass("btn-danger");
+			}
+		});
+	};
+	getStatus();
+	setInterval(function(){
+		console.log('GET STATUS');
+		getStatus();
+	}, 3000);
 });
+
 
 
 $("#masterBtn").on('click', function(){
