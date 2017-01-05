@@ -142,6 +142,12 @@ app.post('/status', function(req, res){
 	});
 });
 
+app.get('/status', function(req, res){
+	pin7Read(function(){
+		res.send({status: pin7preklop.stanjeIzhoda ? 'primary' : 'backup', uptime: Date()}); // če je true(1) = primary, če je false(0) = backup
+	});
+});
+
 app.get('/login',
   function(req, res){
     res.render('login', {bodyClass: 'login'});
