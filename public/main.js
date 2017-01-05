@@ -1,4 +1,4 @@
-$.post( "/status", function(data){
+$.post( "/status", function(data){ // TODO: timer - osveži na 
 	// console.log(data.status);
 	if (data.status===0){
 		$("#backupBtn").addClass("btn-danger").removeClass("btn-default");
