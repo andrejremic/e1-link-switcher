@@ -2,7 +2,8 @@ $( document ).ready(function() {
 
 	function getStatus() {
 		$.post( "/status", function(data){ // TODO: timer - osveži na 
-			// console.log(data.status);
+			console.log(data.refreshTimestamp);
+			$(".refreshTimestamp").text(data.refreshTimestamp);
 			if (data.status===0){
 				$("#backupBtn").addClass("btn-danger").removeClass("btn-default");
 				$("#masterBtn").addClass("btn-default").removeClass("btn-success");

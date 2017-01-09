@@ -1,10 +1,10 @@
 var os 	 					= require('os'),
+	moment  				= require('moment'),
 	express  				= require('express'),
 	passport 				= require('passport'),
 	Strategy 				= require('passport-local').Strategy,
 	Gpio  					= require('onoff').Gpio,
 	db 						= require('./db');
-
 
 // Configure the local strategy for use by Passport.
 //
@@ -52,7 +52,7 @@ app.use(express.static('public'));
 
 // Use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
-app.use(require('morgan')('combined'));
+//app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'lep dan!', resave: false, saveUninitialized: false }));
@@ -89,6 +89,7 @@ function pin7Read(callback){
 		    throw err;
 	    }
 		pin7preklop.stanjeIzhoda = value;
+		pin7preklop.readTimestamp = moment(); 
 		// console.log(pin7preklop.stanjeIzhoda);
 		statusPovezave = mapAktivnaPovezava(value);
 		callback();
@@ -96,7 +97,7 @@ function pin7Read(callback){
 };
 
 pin7Read(function(){
-	console.log(Date()+' Trenutno aktivna povezava: '+statusPovezave);
+	console.log(pin7preklop.readTimestamp.format('DD-MM-YYYY H:mm:ss')+' Trenutno aktivna povezava: '+statusPovezave);
 });
 
 
@@ -104,14 +105,15 @@ pin18stikalo.watch(function (err, value) {
 	if (err) {
 	    throw err;
     }
-    console.log('WATCH: '+value);
+    //console.log('WATCH: '+value);
     pin7Read(function(){
-    	console.log('pin7preklop.stanjeIzhoda: '+pin7preklop.stanjeIzhoda);
+    	//console.log('pin7preklop.stanjeIzhoda: '+pin7preklop.stanjeIzhoda);
 	    pin18stikalo.rocniPreklop =  1 ^ pin7preklop.stanjeIzhoda;
 	    // console.log('pin18stikalo.rocniPreklop: '+pin18stikalo.rocniPreklop);
 	    var rocniPreklopIme = mapAktivnaPovezava(pin18stikalo.rocniPreklop);
-	    pin7preklop.write(pin18stikalo.rocniPreklop, function(){
-			// console.log(Date()+' ROČNI PREKLOP preklop na: '+rocniPreklopIme+' '+pin18stikalo.rocniPreklop);
+	    pin7preklop.write(pin18stikalo.rocniPreklop, function(){	    	
+	    	pin7preklop.preklopTimestamp = moment();
+			console.log(pin7preklop.preklopTimestamp.format('DD-MM-YYYY H:mm:ss')+' ROČNI PREKLOP preklop na: '+rocniPreklopIme+' '+pin18stikalo.rocniPreklop);
 			pin16led.writeSync(pin18stikalo.rocniPreklop);
 		});
     });
@@ -124,9 +126,10 @@ app.post('/preklop', function(req, res){
 		// console.log('pin7preklop.stanjeIzhoda: '+pin7preklop.stanjeIzhoda);
 		// console.log('statusPovezave: '+statusPovezave);
 		if (pin7preklop.stanjeIzhoda!=aktivnaPovezava){
-			pin7preklop.write(aktivnaPovezava, function(){
+			pin7preklop.write(aktivnaPovezava, function(){ 
 				statusPovezave = mapAktivnaPovezava(aktivnaPovezava);
-				console.log(Date()+' WEBUI preklop na: '+statusPovezave);
+				pin7preklop.preklopTimestamp = moment();
+				console.log(pin7preklop.preklopTimestamp.format('DD-MM-YYYY H:mm:ss')+' WEBUI preklop na: '+statusPovezave);
 				res.send({success: 'true'});	// preklopil	
 			});
 		} else {
@@ -137,14 +140,14 @@ app.post('/preklop', function(req, res){
 
 app.post('/status', function(req, res){
 	pin7Read(function(){
-		console.log(Date()+' WEBUI POST /status: '+statusPovezave);
-		res.send({status: mapAktivnaPovezava(statusPovezave)});
+		console.log(pin7preklop.readTimestamp.format('DD-MM-YYYY H:mm:ss')+' WEBUI POST /status: '+statusPovezave);
+		res.send({status: mapAktivnaPovezava(statusPovezave), refreshTimestamp: pin7preklop.readTimestamp.format('H:mm:ss')});
 	});
 });
 
 app.get('/status', function(req, res){
 	pin7Read(function(){
-		res.send({status: pin7preklop.stanjeIzhoda ? 'primary' : 'backup', uptime: Date()}); // če je true(1) = primary, če je false(0) = backup
+		res.send({status: pin7preklop.stanjeIzhoda ? 'primary' : 'backup', uptime: moment.duration(os.uptime(), 'seconds').days()}); // če je true(1) = primary, če je false(0) = backup
 	});
 });
 
@@ -182,7 +185,7 @@ app.get('/',
 
 
 process.on('SIGINT', function () { // CTRL+C
-  console.log('\n'+Date()+' Preklopnik USTAVLJEN!')
+  console.log('\n'+moment().format('DD-MM-YYYY H:mm:ss')+' Preklopnik USTAVLJEN!')
   pin7preklop.unexport(); 
   pin18stikalo.unexport(); 
   pin16led.unexport(); 
@@ -190,5 +193,5 @@ process.on('SIGINT', function () { // CTRL+C
 });
 
 app.listen(webuiPort, function(){
-	console.log(Date()+' Preklopnik ZAGNAN. >>> Spletni vmesnik je dosegliv na http://'+eth0IP+':'+webuiPort+'. <<<');
+	console.log(moment().format('DD-MM-YYYY H:mm:ss')+' Preklopnik ZAGNAN. >>> Spletni vmesnik je dosegliv na http://'+eth0IP+':'+webuiPort+'. <<<');
 });
