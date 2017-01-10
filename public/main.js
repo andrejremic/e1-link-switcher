@@ -1,15 +1,25 @@
 $( document ).ready(function() {
 
 	function getStatus() {
-		$.post( "/status", function(data){ // TODO: timer - osveži na 
-			console.log(data.refreshTimestamp);
-			$(".refreshTimestamp").text(data.refreshTimestamp);
-			if (data.status===0){
-				$("#backupBtn").addClass("btn-danger").removeClass("btn-default");
-				$("#masterBtn").addClass("btn-default").removeClass("btn-success");
-			} else if (data.status===1) {
-				$("#masterBtn").addClass("btn-success").removeClass("btn-default");
-				$("#backupBtn").addClass("btn-default").removeClass("btn-danger");
+		$.ajax({ 
+			method: "post",
+			url: "/status",
+			dataType: "json",
+			timeout: 1000,
+			success: function( data){
+				// console.log(data.refreshTimestamp);
+				$(".refreshTimestamp").text(data.refreshTimestamp);
+				if (data.status===0){
+					$("#backupBtn").addClass("btn-danger").removeClass("btn-default");
+					$("#masterBtn").addClass("btn-default").removeClass("btn-success");
+				} else if (data.status===1) {
+					$("#masterBtn").addClass("btn-success").removeClass("btn-default");
+					$("#backupBtn").addClass("btn-default").removeClass("btn-danger");
+				}
+			},
+			error: function() {
+				console.log("Napaka na komunikaciji!");
+				$(".refreshTimestamp").html("<strong>Napaka na komunikaciji!<strong>");
 			}
 		});
 	};
