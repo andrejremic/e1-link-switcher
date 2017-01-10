@@ -147,7 +147,7 @@ app.post('/status', function(req, res){
 
 app.get('/status', function(req, res){
 	pin7Read(function(){
-		res.send({status: pin7preklop.stanjeIzhoda ? 'primary' : 'backup', uptime: moment.duration(os.uptime(), 'seconds').days()}); // če je true(1) = primary, če je false(0) = backup
+		res.send({status: pin7preklop.stanjeIzhoda ? 'primary' : 'backup', uptime: parseInt(os.uptime())}); // če je true(1) = primary, če je false(0) = backup; uptime je v sekundah
 	});
 });
 
