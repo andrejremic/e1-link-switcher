@@ -63,3 +63,14 @@ body.login {
 .logoP {
   color: #fff;
 }
+
+.preklopnikSlika {
+  margin-top: -20px;
+  margin-bottom: 20px;
+  padding-right: 0px;
+  padding-left: 0px;
+  border-width: 0px 2px 2px 2px;
+  border-style: solid;
+  border-bottom-left-radius: 1px;
+  border-bottom-right-radius: 1px;
+}
