@@ -173,7 +173,6 @@ app.get('/',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
 	res.render('home', {bodyClass: 'default', currentUsername: req.user.displayName});
-	console.log('REQ '+req);
 });
 
 
