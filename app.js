@@ -107,7 +107,7 @@ pin18stikalo.watch(function (err, value) {
     }
     //console.log('WATCH: '+value);
     pin7Read(function(){
-    	//console.log('pin7preklop.stanjeIzhoda: '+pin7preklop.stanjeIzhoda);
+    	// console.log('pin7preklop.stanjeIzhoda: '+pin7preklop.stanjeIzhoda);
 	    pin18stikalo.rocniPreklop =  1 ^ pin7preklop.stanjeIzhoda;
 	    // console.log('pin18stikalo.rocniPreklop: '+pin18stikalo.rocniPreklop);
 	    var rocniPreklopIme = mapAktivnaPovezava(pin18stikalo.rocniPreklop);
@@ -147,7 +147,13 @@ app.post('/status', function(req, res){
 
 app.get('/status', function(req, res){
 	pin7Read(function(){
-		res.send({status: pin7preklop.stanjeIzhoda ? 'primary' : 'backup', uptime: parseInt(os.uptime())}); // če je true(1) = primary, če je false(0) = backup; uptime je v sekundah
+		res.send({
+			status: pin7preklop.stanjeIzhoda, // če je true(1) = primary, če je false(0) = backup; 
+			severity: pin7preklop.stanjeIzhoda ? 0:1, // for nagios: if 0 is OK, if 1 is Yellow alarm
+			message: pin7preklop.stanjeIzhoda ? 'E1 preklop na primarno pot':'E1 preklop na REDUNDANTNO pot!', // nagios msg
+			lastSwitch: pin7preklop.preklopTimestamp ? pin7preklop.preklopTimestamp.format('DD-MM-YYYY H:mm:ss'):'od zadnjega zagona E1 preklopnika, ni bilo preklopov',
+			uptime: parseInt(os.uptime())
+		}); // uptime je v sekundah
 	});
 });
 
