@@ -74,8 +74,6 @@ var pin18stikalo = new Gpio(201, 'in', 'both');
 var pin16led = new Gpio(200, 'out');
 var	statusPovezave;
 
-var eth0IP = os.networkInterfaces().eth0[0].address;
-
 function mapAktivnaPovezava(val){
 	if (val===0) return 'REDUNDANTNA';
 	if (val===1) return 'PRIMARNA';
@@ -190,6 +188,6 @@ process.on('SIGINT', function () { // CTRL+C
 });
 
 app.listen(webuiPort, function(){
-	console.log(moment().format('DD-MM-YYYY H:mm:ss')+' Preklopnik ZAGNAN. >>> Spletni vmesnik je dosegliv na http://'+eth0IP+':'+webuiPort+'. <<<');
+	console.log(moment().format('DD-MM-YYYY H:mm:ss')+' Preklopnik ZAGNAN.');
 	pin16led.writeSync(pin18stikalo.rocniPreklop);
 });
