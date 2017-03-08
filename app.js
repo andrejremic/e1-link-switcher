@@ -114,7 +114,6 @@ pin18stikalo.watch(function (err, value) {
 	    pin7preklop.write(pin18stikalo.rocniPreklop, function(){	    	
 	    	pin7preklop.preklopTimestamp = moment();
 			console.log(pin7preklop.preklopTimestamp.format('DD-MM-YYYY H:mm:ss')+' ROČNI PREKLOP preklop na: '+rocniPreklopIme+' '+pin18stikalo.rocniPreklop);
-			pin16led.writeSync(pin18stikalo.rocniPreklop);
 		});
     });
 });
@@ -182,13 +181,6 @@ app.get('/',
 });
 
 
-
-
-// app.get('/config', function(req, res){
-// 	res.render('config', {bodyClass: 'default', currentUsername: 'test'});
-// });
-
-
 process.on('SIGINT', function () { // CTRL+C
   console.log('\n'+moment().format('DD-MM-YYYY H:mm:ss')+' Preklopnik USTAVLJEN!')
   pin7preklop.unexport(); 
@@ -199,4 +191,5 @@ process.on('SIGINT', function () { // CTRL+C
 
 app.listen(webuiPort, function(){
 	console.log(moment().format('DD-MM-YYYY H:mm:ss')+' Preklopnik ZAGNAN. >>> Spletni vmesnik je dosegliv na http://'+eth0IP+':'+webuiPort+'. <<<');
+	pin16led.writeSync(pin18stikalo.rocniPreklop);
 });
